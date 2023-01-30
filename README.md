@@ -94,7 +94,7 @@ kubectl logs -n peers $PEER_POD | grep 'Starting peer'
 ```
 helm install peer${NUM}-cli ./charts/hlf-peer-cli -n peers -f ./releases/helm_values/peer${NUM}-cli.yaml
 export CLI_POD=$(kubectl get pods --namespace peers -l "app=hlf-peer,release=peer1-cli" -o jsonpath="{.items[0].metadata.name}")
-kubectl exec -n peers --stdin --tty $CLI_POD  -- bin/bash
+kubectl exec -n peers --stdin --tty $CLI_POD  -- /bin/bash
 
 FABRIC_CFG_PATH=/etc/hyperledger/fabric/
 CORE_PEER_MSPCONFIGPATH=/var/hyperledger/admin_msp/
