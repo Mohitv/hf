@@ -92,12 +92,15 @@ kubectl logs -n peers $PEER_POD | grep 'Starting peer'
 
 # Start a peer and join channel 
 ```
+#orderer cli - for system channel operations
+helm install ord-cli ./charts/hlf-ord-cli -n orderers -f ./releases/helm_values/ord-cli.yaml
+export ORD_CLI_POD=$(kubectl get pods --namespace orderers -l "app=hlf-peer,release=ord-cli" -o jsonpath="{.items[0].metadata.name}")
+kubectl exec -n peers --stdin --tty $ORD_CLI_POD  -- /bin/bash
+
+#Peer cli - for application channel operations
 helm install peer${NUM}-cli ./charts/hlf-peer-cli -n peers -f ./releases/helm_values/peer${NUM}-cli.yaml
 export CLI_POD=$(kubectl get pods --namespace peers -l "app=hlf-peer,release=peer1-cli" -o jsonpath="{.items[0].metadata.name}")
 kubectl exec -n peers --stdin --tty $CLI_POD  -- /bin/bash
-
-FABRIC_CFG_PATH=/etc/hyperledger/fabric/
-CORE_PEER_MSPCONFIGPATH=/var/hyperledger/admin_msp/
 
 #Create channel
 peer channel create -o ord1-hlf-ord.orderers.svc.cluster.local:7050 -c mychannel -f /hl_config/channel/hlf--channel/mychannel.tx --tls --cafile /var/hyperledger/tls/server/cert/key.pem
