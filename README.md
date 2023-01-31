@@ -106,12 +106,12 @@ kubectl exec -n peers --stdin --tty $CLI_POD  -- /bin/bash
 peer channel create -o ord1-hlf-ord.orderers.svc.cluster.local:7050 -c mychannel -f /hl_config/channel/hlf--channel/mychannel.tx --tls --cafile /var/hyperledger/tls/server/cert/key.pem
 
 #Join channel
-peer channel fetch config mychannel.block -c mychannel -o ord1-hlf-ord.orderers.svc.cluster.local:7050 --tls --cafile /var/hyperledger/tls/server/cert/key.pem
+peer channel fetch config config_block.pb -c mychannel -o ord1-hlf-ord.orderers.svc.cluster.local:7050 --tls --cafile /var/hyperledger/tls/server/cert/key.pem
 peer channel join -b mychannel.block
 
 # Deploy chaincode and test
 
-peer chaincode instantiate -o ord1-hlf-ord.orderers.svc.cluster.local:7050 -n sacc -v 1.0 -c '{"Args":["key1","value1"]}' -C mychannel
+peer chaincode instantiate -o ord1-hlf-ord.orderers.svc.cluster.local:7050 --tls --cafile /var/hyperledger/tls/server/cert/key.pem -n sacc -v 1.0 -c '{"Args":["key1","value1"]}' -C mychannel
 
 peer chaincode query -C mychannel -n sacc -c '{"Args":["get","name"]}'
 
@@ -140,6 +140,7 @@ helm uninstall ord${NUM} -n orderers
 helm uninstall peer${NUM} -n peers
 helm uninstall cdb-peer${NUM} -n peers
 helm uninstall peer${NUM}-cli -n peers
+helm uninstall ord-cli -n orderers
 kubectl delete secrets --all -n orderers
 kubectl delete secrets --all -n peers
 ```
